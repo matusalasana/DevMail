@@ -9,6 +9,8 @@
     "start": "node dist/server.js",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
+    "email:test": "tsx src/modules/emails/test-ingest.ts",
+    "email:cleanup": "tsx src/db/cleanup-test-email.ts",
     "push": "drizzle-kit push"
   },
   "keywords": [],

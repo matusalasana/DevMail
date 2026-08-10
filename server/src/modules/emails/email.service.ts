@@ -25,7 +25,7 @@ export async function ingestEmail(email: ParsedEmail) {
 
     // 2. Store all email metadata inside one PostgreSQL transaction.
     const createdEmail = await db.transaction(async (tx) => {
-      const created = await createEmail(tx, email);
+      const created = await createEmail(tx, emailId, email);
 
       await createRecipients(
         tx,

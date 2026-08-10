@@ -11,11 +11,13 @@ import type { ParsedEmail } from "./email.types";
 
 export async function createEmail(
   tx: NeonDatabase,
+  emailId: string,
   email: ParsedEmail,
 ) {
   const [createdEmail] = await tx
     .insert(emails)
     .values({
+      id: emailId,
       messageId: email.messageId,
       sender: email.sender,
       replyTo: email.replyTo,
