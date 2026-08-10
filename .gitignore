@@ -9,3 +9,6 @@ coverage/
 !.env.example
 
 /generated/prisma
+
+# DevMail attachment storage
+storage/
