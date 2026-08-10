@@ -26,6 +26,10 @@ export async function createEmail(
     })
     .returning();
 
+  if (!createdEmail) {
+    throw new Error("Failed to create email");
+  }
+
   return createdEmail;
 }
 
