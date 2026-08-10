@@ -29,7 +29,7 @@ export const smtpServer = new SMTPServer({
         id: Date.now(),
         from: parsed.from?.text ?? "Unknown",
         subject: parsed.subject ?? "(No Subject)",
-        html: parsed.html ?? parsed.textAsHtml ?? "",
+        html: parsed.html || parsed.textAsHtml || "",
         text: parsed.text ?? "",
         date: new Date().toISOString(),
       });
