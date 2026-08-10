@@ -95,11 +95,33 @@ function normalizeHeaderValue(value: unknown): string {
   }
 
   if (Array.isArray(value)) {
-    return value.map(String).join(", ");
+    return value.map(normalizeHeaderValue).join(", ");
   }
 
-  if (value && typeof value === "object" && "text" in value) {
-    return String(value.text);
+  if (value && typeof value === "object") {
+    if ("text" in value && typeof value.text === "string") {
+      return value.text;
+    }
+
+    if ("value" in value) {
+      const nestedValue = value.value;
+
+      if (typeof nestedValue === "string") {
+        return nestedValue;
+      }
+
+      if (Array.isArray(nestedValue)) {
+        return nestedValue
+          .map(normalizeHeaderValue)
+          .join("; ");
+      }
+    }
+
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return String(value);
+    }
   }
 
   return String(value);

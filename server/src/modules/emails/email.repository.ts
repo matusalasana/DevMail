@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import type { NeonDatabase } from "drizzle-orm/neon-serverless";
 import { db } from "../../db/";
 
@@ -17,6 +17,56 @@ export async function findAllEmails() {
     .select()
     .from(emails)
     .orderBy(desc(emails.receivedAt));
+}
+
+export async function findEmailById(emailId: string) {
+  const [email] = await db
+    .select()
+    .from(emails)
+    .where(eq(emails.id, emailId));
+
+  if (!email) {
+    return null;
+  }
+
+  const recipients = await db
+    .select()
+    .from(emailRecipients)
+    .where(eq(emailRecipients.emailId, emailId));
+
+  const headers = await db
+    .select()
+    .from(emailHeaders)
+    .where(eq(emailHeaders.emailId, emailId));
+
+  const attachments = await db
+    .select()
+    .from(emailAttachments)
+    .where(eq(emailAttachments.emailId, emailId));
+
+  return {
+    ...email,
+    recipients,
+    headers,
+    attachments,
+  };
+}
+
+export async function findAttachmentById(
+  emailId: string,
+  attachmentId: string,
+) {
+  const [attachment] = await db
+    .select()
+    .from(emailAttachments)
+    .where(
+      and(
+        eq(emailAttachments.id, attachmentId),
+        eq(emailAttachments.emailId, emailId),
+      ),
+    );
+
+  return attachment ?? null;
 }
 
 export async function createEmail(

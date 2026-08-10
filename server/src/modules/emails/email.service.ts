@@ -6,8 +6,10 @@ import {
   createRecipients,
   deleteEmail,
   findAllEmails,
+  findEmailById,
+  findAttachmentById,
 } from "./email.repository";
-import { removeAttachmentDirectory, storeAttachments } from "../../storage/attachment.storage";
+import { removeAttachmentDirectory, storeAttachments, readAttachment } from "../../storage/attachment.storage";
 
 import type { ParsedEmail } from "./email.types";
 
@@ -16,6 +18,9 @@ export async function getAllEmails() {
   return findAllEmails();
 }
 
+export async function getEmailById(emailId: string) {
+  return findEmailById(emailId);
+}
 
 export async function ingestEmail(email: ParsedEmail) {
   const emailId = crypto.randomUUID();
@@ -64,6 +69,28 @@ export async function ingestEmail(email: ParsedEmail) {
 
     throw error;
   }
+}
+
+
+export async function getEmailAttachment(
+  emailId: string,
+  attachmentId: string,
+) {
+  const attachment = await findAttachmentById(
+    emailId,
+    attachmentId,
+  );
+
+  if (!attachment) {
+    return null;
+  }
+
+  const content = await readAttachment(attachment.path);
+
+  return {
+    attachment,
+    content,
+  };
 }
 
 export async function deleteEmailById(
