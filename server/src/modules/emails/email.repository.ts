@@ -1,4 +1,6 @@
+import { desc, eq } from "drizzle-orm";
 import type { NeonDatabase } from "drizzle-orm/neon-serverless";
+import { db } from "../../db/";
 
 import {
   emailAttachments,
@@ -8,6 +10,14 @@ import {
 } from "../../db/schema";
 
 import type { ParsedEmail } from "./email.types";
+
+
+export async function findAllEmails() {
+  return db
+    .select()
+    .from(emails)
+    .orderBy(desc(emails.receivedAt));
+}
 
 export async function createEmail(
   tx: NeonDatabase,
@@ -105,4 +115,17 @@ export async function createAttachments(
       })),
     )
     .returning();
+}
+
+
+export async function deleteEmail(
+  tx: NeonDatabase,
+  emailId: string,
+) {
+  const [deletedEmail] = await tx
+    .delete(emails)
+    .where(eq(emails.id, emailId))
+    .returning();
+
+  return deletedEmail;
 }

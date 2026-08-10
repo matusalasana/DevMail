@@ -11,6 +11,7 @@
     "migrate": "drizzle-kit migrate",
     "email:test": "tsx src/modules/emails/test-ingest.ts",
     "email:cleanup": "tsx src/db/cleanup-test-email.ts",
+    "email:delete": "tsx src/modules/emails/test-delete.ts",
     "push": "drizzle-kit push"
   },
   "keywords": [],

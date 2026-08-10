@@ -1,18 +1,17 @@
 import { eq } from "drizzle-orm";
 
-import { db } from "./index.ts";
-import { emails } from "./schema/emails.js";
+import { db } from "./index";
+import { emails } from "./schema/emails";
 
 async function main() {
-
   try {
     const deleted = await db
       .delete(emails);
 
-    if (deleted.length === 0) {
+    if (deleted.rowCount === 0) {
       console.log("⚠️ No email was found");
     } else {
-      console.log("✅ Emails deleted");
+      console.log(`✅ ${deleted.rowCount} email(s) deleted`);
     }
   } catch (error) {
     console.error("❌ Failed to delete test emails");

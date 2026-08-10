@@ -4,10 +4,18 @@ import {
   createEmail,
   createHeaders,
   createRecipients,
+  deleteEmail,
+  findAllEmails,
 } from "./email.repository";
 import { removeAttachmentDirectory, storeAttachments } from "../../storage/attachment.storage";
 
 import type { ParsedEmail } from "./email.types";
+
+
+export async function getAllEmails() {
+  return findAllEmails();
+}
+
 
 export async function ingestEmail(email: ParsedEmail) {
   const emailId = crypto.randomUUID();
@@ -56,4 +64,27 @@ export async function ingestEmail(email: ParsedEmail) {
 
     throw error;
   }
+}
+
+export async function deleteEmailById(
+  emailId: string,
+): Promise<boolean> {
+  const deletedEmail = await db.transaction(async (tx) => {
+    return deleteEmail(tx, emailId);
+  });
+
+  if (!deletedEmail) {
+    return false;
+  }
+
+  try {
+    await removeAttachmentDirectory(emailId);
+  } catch (error) {
+    console.error(
+      `⚠️ Failed to remove attachment directory for email ${emailId}`,
+      error,
+    );
+  }
+
+  return true;
 }

@@ -1,10 +1,13 @@
 import express from "express";
 import cors from "cors";
+import { errorHandler } from "./middleware/error-handler";
+import emailRoutes from "./modules/emails/email.routes"
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use("/api/v1/emails", emailRoutes);
 
 app.get("/health", (_req, res) => {
   res.json({
@@ -12,5 +15,7 @@ app.get("/health", (_req, res) => {
     service: "devmail-api",
   });
 });
+
+app.use(errorHandler)
 
 export default app;
