@@ -12,7 +12,7 @@ const getEmails = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const getEmail = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id;
   const email = await EmailService.getEmail(id);
 
   if (!email) {
