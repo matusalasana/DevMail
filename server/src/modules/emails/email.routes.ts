@@ -1,23 +1,21 @@
 import { Router } from "express";
 
 import {
-  deleteEmailController,
-  getEmailController,
-  getEmailsController,
-  downloadAttachmentController
+  EmailController
 } from "./email.controller";
 
 const router = Router();
 
-router.get("/", getEmailsController);
 
-router.get("/:id", getEmailController);
+router.get("/", EmailController.getEmails);
 
-router.delete("/:id", deleteEmailController);
+router.post("/", EmailController.createEmail);
 
-router.get(
-  "/:id/attachments/:attachmentId",
-  downloadAttachmentController,
-);
+router.get("/:id", EmailController.getEmail);
+
+router.delete("/:id", EmailController.deleteEmail);
+
+router.delete("/", EmailController.deleteAllEmails);
+
 
 export default router;

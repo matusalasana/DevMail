@@ -1,106 +1,65 @@
-import type { Request, Response } from "express";
+import { Request, Response } from "express";
+import { asyncHandler } from "../../middleware/asyncHandler";
+import { EmailService } from "./email.service";
 
-import {
-  deleteEmailById,
-  getAllEmails,
-  getEmailById,
-  getEmailAttachment,
-} from "./email.service";
+const getEmails = asyncHandler(async (req: Request, res: Response) => {
+  const emails = await EmailService.getEmails();
 
-
-export async function downloadAttachmentController(
-  req: Request,
-  res: Response,
-) {
-  const emailId = req.params.id as string;
-  const attachmentId = req.params.attachmentId as string;
-
-  const email = await getEmailById(emailId);
-
-  if (!email) {
-    res.status(404).json({
-      message: "Email not found",
-    });
-
-    return;
-  }
-
-  const result = await getEmailAttachment(
-    emailId,
-    attachmentId,
-  );
-
-  if (!result) {
-    res.status(404).json({
-      message: "Attachment not found",
-    });
-
-    return;
-  }
-
-  const { attachment, content } = result;
-
-  res.setHeader(
-    "Content-Type",
-    attachment.contentType || "application/octet-stream",
-  );
-
-  res.setHeader(
-    "Content-Disposition",
-    `attachment; filename="${attachment.filename}"`,
-  );
-
-  res.send(content);
-}
-
-
-export async function getEmailController(
-  req: Request,
-  res: Response,
-) {
-  const id = req.params.id as string;
-
-  const email = await getEmailById(id);
-
-  if (!email) {
-    res.status(404).json({
-      message: "Email not found",
-    });
-
-    return;
-  }
-
-  res.json({
-    data: email,
-  });
-}
-
-export async function getEmailsController(
-  _req: Request,
-  res: Response,
-) {
-  const emails = await getAllEmails();
-
-  res.json({
+  res.status(200).json({
+    success: true,
     data: emails,
   });
-}
+});
 
-export async function deleteEmailController(
-  req: Request,
-  res: Response,
-) {
-  const id = req.params.id as string;
+const getEmail = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const email = await EmailService.getEmail(id);
 
-  const deleted = await deleteEmailById(id);
-
-  if (!deleted) {
-    res.status(404).json({
+  if (!email) {
+    return res.status(404).json({
+      success: false,
       message: "Email not found",
     });
-
-    return;
   }
 
-  res.status(204).send();
-}
+  res.status(200).json({
+    success: true,
+    data: email,
+  });
+});
+
+const createEmail = asyncHandler(async (req: Request, res: Response) => {
+  const newEmail = await EmailService.createEmail(req.body);
+
+  res.status(201).json({
+    success: true,
+    data: newEmail,
+  });
+});
+
+const deleteEmail = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  await EmailService.deleteEmail(id);
+
+  res.status(200).json({
+    success: true,
+    message: "Email deleted successfully",
+  });
+});
+
+const deleteAllEmails = asyncHandler(async (req: Request, res: Response) => {
+  await EmailService.deleteAllEmails();
+
+  res.status(200).json({
+    success: true,
+    message: "All emails deleted successfully",
+  });
+});
+
+export const EmailController = {
+  getEmails,
+  getEmail,
+  createEmail,
+  deleteEmail,
+  deleteAllEmails,
+};

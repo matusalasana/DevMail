@@ -29,4 +29,4 @@ async function startServer() {
 startServer().catch((error) => {
   console.error("❌ DevMail startup failed:", error);
   process.exit(1);
-});
+}); 

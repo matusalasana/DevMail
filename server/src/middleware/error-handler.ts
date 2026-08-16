@@ -1,3 +1,4 @@
+import { env } from "../config/env"
 import type { ErrorRequestHandler } from "express";
 
 export const errorHandler: ErrorRequestHandler = (
@@ -6,10 +7,13 @@ export const errorHandler: ErrorRequestHandler = (
   res,
   _next,
 ) => {
+  
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   console.error(error);
 
-  res.status(500).json({
-    status: "error",
-    message: "Internal server error",
+  res.status(statusCode).json({
+    status: statusCode,
+    message: error.message,
+    stack: process.env.nodeEnv === 'production' ? null : error.stack,
   });
 };
