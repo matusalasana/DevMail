@@ -9,7 +9,7 @@ const getEmail = async (id: string) => {
   return await EmailRepository.getEmail(id);
 };
 
-const createEmail = async (payload: CreateEmailDto) => {
+const createEmail = async (payload: any) => {
   return await EmailRepository.create(payload);
 };
 

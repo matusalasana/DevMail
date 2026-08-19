@@ -15,16 +15,13 @@ export const smtpServer = new SMTPServer({
     simpleParser(stream)
       .then( async (parsed) => {
         const insertedEmail = await EmailRepository.create({
-            from: parsed.from?.value?.[0]?.address || "Unknown",
-            to: parsed.to?.value?.map((recipient) => recipient.address).join(", ") || "Unknown",
+            from: parsed.from?.text || "Unknown",
+            to: parsed.to?.text || "Unknown",
             subject: parsed.subject || '(No Subject)',
-            messageId: parsed.messageId,
-            sender: parsed.sender?.value?.[0]?.name || "Unknown",
-            replyTo: parsed.replyTo?.value?.[0]?.address || null,
             textBody: parsed.text || '',
             htmlBody: parsed.html || '',
           });
-
+        
         console.log(`\n💾 Email saved to DB via Drizzle! ID: ${insertedEmail.id}`);
         console.log(`Subject: ${insertedEmail.subject}\n`);
 

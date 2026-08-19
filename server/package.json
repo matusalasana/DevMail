@@ -2,22 +2,21 @@
   "name": "devmail",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "type": "module",
+  "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
     "start": "node dist/server.js",
+    "clean": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\"",
+    "prebuild": "npm run clean",
+    "build": "tsc",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
-    "push": "drizzle-kit push",
-    "email:test": "tsx src/modules/emails/test-ingest.ts",
-    "email:cleanup": "tsx src/db/cleanup-test-email.ts",
-    "email:delete": "tsx src/modules/emails/test-delete.ts"
+    "push": "drizzle-kit push"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
     "cors": "^2.8.6",

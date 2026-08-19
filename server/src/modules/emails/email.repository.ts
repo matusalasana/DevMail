@@ -16,7 +16,7 @@ const getEmail = async (emailId: string) => {
   return result[0] ?? null;
 };
 
-const create = async (email: NewEmail): Promise<Email | null> => {
+const create = async (email: any) => {
   const createdEmail = await db
     .insert(emails)
     .values({
@@ -28,7 +28,7 @@ const create = async (email: NewEmail): Promise<Email | null> => {
   return createdEmail[0] ?? null;
 };
 
-const deleteById = async (emailId: string): Promise<Email | null> => {
+const deleteById = async (emailId: string) => {
   const deletedEmail = await db
     .delete(emails)
     .where(eq(emails.id, emailId))

@@ -12,7 +12,7 @@ const getEmails = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const getEmail = asyncHandler(async (req: Request, res: Response) => {
-  const id = req.params.id;
+  const id = req.params.id as string;
   const email = await EmailService.getEmail(id);
 
   if (!email) {
@@ -38,7 +38,7 @@ const createEmail = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const deleteEmail = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   await EmailService.deleteEmail(id);
 
   res.status(200).json({
