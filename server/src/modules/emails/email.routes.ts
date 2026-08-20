@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import {
   EmailController
-} from "./email.controller";
+} from "./email.controller.js";
 
 const router = Router();
 

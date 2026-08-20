@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import { errorHandler } from "./middleware/error-handler";
-import emailRoutes from "./modules/emails/email.routes"
+import { errorHandler } from "./middleware/error-handler.js";
+import emailRoutes from "./modules/emails/email.routes.js"
 
 const app = express();
 

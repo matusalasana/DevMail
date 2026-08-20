@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { asyncHandler } from "../../middleware/asyncHandler";
-import { EmailService } from "./email.service";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
+import { EmailService } from "./email.service.js";
 
 const getEmails = asyncHandler(async (req: Request, res: Response) => {
   const emails = await EmailService.getEmails();

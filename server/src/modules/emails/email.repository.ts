@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
-import { db } from "../../db"; // Point to your database connection instance
-import { emails } from "../../db/schema/emails";
+import { db } from "../../db/index.js";
+import { emails } from "../../db/schema/emails.js";
 
 const getEmails = async () => {
   const list = await db.select().from(emails);

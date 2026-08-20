@@ -1,4 +1,4 @@
-import { EmailRepository } from "./email.repository";
+import { EmailRepository } from "./email.repository.js";
 
 
 const getEmails = async () => {
