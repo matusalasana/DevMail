@@ -1,4 +1,4 @@
-#DevMail 📧
+# DevMail 📧
 
 DevMail is a lightweight, developer-focused email testing and routing service for capturing, inspecting, and debugging transactional emails in local and staging environments—without accidentally sending emails to real users.
 
@@ -35,7 +35,7 @@ Docker:
 
 - Docker ">= 20"
 
-Installation
+### Installation
 
 Clone the repository and install the dependencies:
 ```
@@ -64,7 +64,7 @@ http://localhost:3000
 
 ---
 
-🚀 Usage
+## 🚀 Usage
 
 Configure Your Application
 
@@ -112,7 +112,7 @@ The email should appear immediately in the DevMail dashboard.
 
 ---
 
-🖥️ Web Dashboard
+## 🖥️ Web Dashboard
 
 Open:
 
@@ -132,7 +132,7 @@ Depending on the email, you can inspect:
 
 ---
 
-🧪 Automated Testing
+## 🧪 Automated Testing
 
 DevMail is designed to work well with automated end-to-end and integration tests.
 
@@ -164,7 +164,7 @@ curl http://localhost:3000/api/v1/emails
 
 ---
 
-🔌 REST API
+## 🔌 REST API
 
 The API is available under:
 
@@ -202,7 +202,7 @@ curl -X DELETE http://localhost:3000/api/v1/emails
 
 ---
 
-⚙️ Configuration
+## ⚙️ Configuration
 
 DevMail can be configured through environment variables in ".env".
 
@@ -223,7 +223,7 @@ MAX_EMAILS=100
 
 ---
 
-🐳 Docker
+## 🐳 Docker
 
 DevMail can also be run with Docker if a Docker configuration is provided by the project.
 
@@ -248,7 +248,7 @@ localhost:1025
 
 ---
 
-🏗️ Architecture
+## 🏗️ Architecture
 
 At a high level, DevMail consists of three components:
 ```
@@ -277,7 +277,7 @@ This architecture keeps email delivery inside your development environment and m
 
 ---
 
-🔐 Security Considerations
+## 🔐 Security Considerations
 
 DevMail is intended primarily for local development and controlled staging environments.
 
@@ -293,7 +293,7 @@ When running DevMail in a shared or remote environment:
 
 ---
 
-🛠️ Development
+## 🛠️ Development
 
 Install dependencies:
 
@@ -315,7 +315,7 @@ npm run build
 
 ---
 
-🗺️ Roadmap
+## 🗺️ Roadmap
 
 Potential future improvements include:
 
@@ -335,7 +335,7 @@ Potential future improvements include:
 
 ---
 
-🤝 Contributing
+## 🤝 Contributing
 
 Contributions, bug reports, feature requests, and improvements are welcome.
 
@@ -356,7 +356,7 @@ Then open a pull request with a clear description of your changes.
 
 ---
 
-📄 License
+## 📄 License
 
 DevMail is licensed under the MIT License.
 
@@ -364,7 +364,7 @@ See the "LICENSE" file for the complete license text.
 
 ---
 
-❤️ Why DevMail?
+## ❤️ Why DevMail?
 
 Testing email shouldn't require sending emails to real inboxes.
 
