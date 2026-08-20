@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './App.css';
 import { useEmails } from './hooks/useEmails';
 import { useEmail } from './hooks/useEmail';
@@ -10,7 +10,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('html'); 
 
   // Renamed mutation variable to avoid collision
-  const { mutate: executeDeleteEmail, isPending: deleting } = useDeleteEmail(selectedId);
+  const { mutate: executeDeleteEmail, isPending: deleting } = useDeleteEmail();
   const { mutate: deleteAllEmails, isPending: deletingAll } = useDeleteAllEmails();
   const { data: email, isLoading: emailLoading } = useEmail(selectedId);
   const { data: emails = [], isLoading: emailsLoading } = useEmails();
@@ -47,7 +47,7 @@ export default function App() {
 
         <ul className="email-list">
           {/* Renamed item variable to avoids shadowing outer 'email' */}
-          {emails.map((item) => (
+          {emails.map((item: any) => (
             <li
               key={item.id}
               className={`email-item ${selectedId === item.id ? 'active' : ''}`}
@@ -55,7 +55,7 @@ export default function App() {
             >
               <div className="email-item-header">
                 <strong>{item.from}</strong>
-                <button onClick={(e) => handleDeleteEmail(item.id, e)}>✕</button>
+                <button onClick={() => handleDeleteEmail(item.id)}>✕</button>
               </div>
               <div className="email-subject">{item.subject}</div>
               <small>{new Date(item.createdAt).toLocaleTimeString()}</small>
