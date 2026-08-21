@@ -1,128 +1,70 @@
 import { useState } from 'react';
-import './App.css';
 import { useEmails } from './hooks/useEmails';
-import { useEmail } from './hooks/useEmail';
-import { useDeleteEmail } from './hooks/useDeleteEmail';
-import { useDeleteAllEmails } from './hooks/useDeleteAllEmails';
+import EmailRow from './components/EmailRow';
+import EmailDetail from './components/EmailDetails';
+import { type Email } from './types/emails';
 
 export default function App() {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('html'); 
+  const { data, isLoading: emailsLoading, error } = useEmails();
+  const [selectedEmailId, setSelectedEmailId] = useState<string | null>(null);
 
-  // Renamed mutation variable to avoid collision
-  const { mutate: executeDeleteEmail, isPending: deleting } = useDeleteEmail();
-  const { mutate: deleteAllEmails, isPending: deletingAll } = useDeleteAllEmails();
-  const { data: email, isLoading: emailLoading } = useEmail(selectedId);
-  const { data: emails = [], isLoading: emailsLoading } = useEmails();
+  const emails: Email[] = Array.isArray(data)
+    ? data
+    : (data as { emails?: Email[] })?.emails ?? [];
 
-  const selectEmail = (id: string) => {
-    setSelectedId(id);
-  };
+  const selectedEmail = emails.find((e) => e.id === selectedEmailId);
 
-  const isPending = deletingAll || deleting;
-  const isLoading = emailsLoading || emailLoading;
+  if (emailsLoading) {
+    return (
+      <div className="container-custom section flex-center">
+        <p className="muted font-mono text-sm animate-pulse">Loading inbox...</p>
+      </div>
+    );
+  }
 
-  const handleDeleteEmail = (id: string) => {
-    executeDeleteEmail(id);
-    if (selectedId === id) setSelectedId(null);
-  };
-
-  const handleClearAll = () => {
-    deleteAllEmails();
-    setSelectedId(null);
-  };
-  
-  if(isLoading){
-    return <p>Loading...</p>;
+  if (error) {
+    return (
+      <div className="container-custom section flex-center">
+        <p className="error-text font-mono text-sm">Failed to connect to DevMail backend.</p>
+      </div>
+    );
   }
 
   return (
-    <div className="container">
-      {/* SIDEBAR: EMAIL LIST */}
-      <aside className="sidebar">
-        <header className="sidebar-header">
-          <h2>📥 Inbox ({emails.length})</h2>
-          <button disabled={isPending} onClick={handleClearAll} className="btn-danger">Clear All</button>
-        </header>
-
-        <ul className="email-list">
-          {/* Renamed item variable to avoids shadowing outer 'email' */}
-          {emails.map((item: any) => (
-            <li
-              key={item.id}
-              className={`email-item ${selectedId === item.id ? 'active' : ''}`}
-              onClick={() => selectEmail(item.id)}
-            >
-              <div className="email-item-header">
-                <strong>{item.from}</strong>
-                <button onClick={() => handleDeleteEmail(item.id)}>✕</button>
-              </div>
-              <div className="email-subject">{item.subject}</div>
-              <small>{new Date(item.createdAt).toLocaleTimeString()}</small>
-            </li>
-          ))}
-        </ul>
-      </aside>
-
-      {/* MAIN CONTENT: EMAIL PREVIEW */}
-      <main className="main-content">
-        {email ? (
-          <div className="email-detail">
-            <header className="email-header">
-              <h3>{email.subject}</h3>
-              <p><strong>From:</strong> {email.from}</p>
-              <p><strong>To:</strong> {email.to}</p>
-            </header>
-
-            {/* TAB NAVIGATION */}
-            <div className="tabs">
-              <button 
-                className={activeTab === 'html' ? 'active' : ''} 
-                onClick={() => setActiveTab('html')}
-              >
-                HTML Preview
-              </button>
-              <button 
-                className={activeTab === 'text' ? 'active' : ''} 
-                onClick={() => setActiveTab('text')}
-              >
-                Plain Text
-              </button>
-              <button 
-                className={activeTab === 'headers' ? 'active' : ''} 
-                onClick={() => setActiveTab('headers')}
-              >
-                Headers / Raw
-              </button>
-            </div>
-
-            {/* TAB CONTENT */}
-            <div className="tab-content">
-              {activeTab === 'html' && (
-                <iframe
-                  title="HTML Preview"
-                  className="html-frame"
-                  srcDoc={email.htmlBody || '<p>No HTML body available</p>'}
-                />
-              )}
-
-              {activeTab === 'text' && (
-                <pre className="text-body">{email.textBody || 'No text content'}</pre>
-              )}
-
-              {activeTab === 'headers' && (
-                <pre className="raw-json">
-                  {JSON.stringify(email.raw, null, 2)}
-                </pre>
-              )}
-            </div>
-          </div>
+    <div className="container-custom section">
+      <div className="max-w-4xl mx-auto">
+        {selectedEmail ? (
+          <EmailDetail
+            email={selectedEmail}
+            onBack={() => setSelectedEmailId(null)}
+          />
         ) : (
-          <div className="empty-state">
-            <p>Select an email from the left sidebar to preview it.</p>
+          <div className="border border-border rounded-xl overflow-hidden bg-card shadow-xs">
+            {/* Header */}
+            <div className="flex-between px-4 py-3 bg-muted border-b border-border text-xs font-mono text-content-muted">
+              <span>CAPTURED EMAILS ({emails.length})</span>
+              <span>DEVMAIL LOCAL SMTP</span>
+            </div>
+
+            {/* List */}
+            {emails.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="muted font-mono text-sm">No intercepted emails found.</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-border">
+                {emails.map((email) => (
+                  <EmailRow
+                    key={email.id}
+                    email={email}
+                    onSelect={setSelectedEmailId}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,174 @@
+/* ========================================
+   BUTTONS
+======================================== */
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200 focus:outline-none disabled:pointer-events-none disabled:opacity-50 cursor-pointer;
+}
+
+@utility btn-primary {
+  @apply btn bg-primary text-background hover:opacity-90 focus:ring-2 focus:ring-primary/50;
+}
+
+@utility btn-secondary {
+  @apply btn bg-muted text-content hover:bg-border focus:ring-2 focus:ring-secondary/30;
+}
+
+@utility btn-outline {
+  @apply btn border border-border bg-transparent text-content hover:bg-muted focus:ring-2 focus:ring-primary/30;
+}
+
+@utility btn-ghost {
+  @apply btn bg-transparent text-content hover:bg-muted focus:ring-2 focus:ring-primary/30;
+}
+
+@utility btn-danger {
+  @apply btn bg-danger text-white hover:opacity-90 focus:ring-2 focus:ring-danger/30;
+}
+
+
+/* ========================================
+   LAYOUT
+======================================== */
+
+@utility flex-center {
+  @apply flex items-center justify-center;
+}
+
+@utility flex-between {
+  @apply flex items-center justify-between;
+}
+
+@utility flex-start {
+  @apply flex items-center justify-start;
+}
+
+@utility flex-end {
+  @apply flex items-center justify-end;
+}
+
+@utility grid-center {
+  @apply grid place-items-center;
+}
+
+@utility container-custom {
+  @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+
+@utility section {
+  @apply py-12 md:py-16 lg:py-24;
+}
+
+
+/* ========================================
+   FORMS
+======================================== */
+
+@utility input {
+  @apply w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-content outline-none transition-colors placeholder:text-content-muted disabled:cursor-not-allowed disabled:opacity-50 focus:border-primary focus:ring-2 focus:ring-primary/20;
+}
+
+@utility textarea {
+  @apply input min-h-32 resize-y;
+}
+
+@utility label {
+  @apply mb-2 block text-sm font-medium text-content;
+}
+
+@utility error-text {
+  @apply text-sm text-danger;
+}
+
+
+/* ========================================
+   TEXT
+======================================== */
+
+@utility text-gradient {
+  @apply bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent;
+}
+
+@utility heading {
+  @apply font-bold tracking-tight text-content;
+}
+
+@utility subheading {
+  @apply text-content-muted;
+}
+
+@utility muted {
+  @apply text-content-muted;
+}
+
+@utility link {
+  @apply text-primary hover:opacity-80 hover:underline;
+}
+
+
+/* ========================================
+   BADGES & STATUS
+======================================== */
+
+@utility badge {
+  @apply inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs font-mono font-medium text-content border border-border;
+}
+
+@utility badge-success {
+  @apply inline-flex items-center rounded-md bg-success/10 px-2 py-0.5 text-xs font-mono font-medium text-success border border-success/20;
+}
+
+@utility badge-warning {
+  @apply inline-flex items-center rounded-md bg-warning/10 px-2 py-0.5 text-xs font-mono font-medium text-warning border border-warning/20;
+}
+
+@utility badge-danger {
+  @apply inline-flex items-center rounded-md bg-danger/10 px-2 py-0.5 text-xs font-mono font-medium text-danger border border-danger/20;
+}
+
+
+/* ========================================
+   LOADING & STATES
+======================================== */
+
+@utility skeleton {
+  @apply animate-pulse rounded-md bg-muted;
+}
+
+@utility loading {
+  @apply pointer-events-none cursor-wait opacity-70;
+}
+
+@utility disabled {
+  @apply pointer-events-none opacity-50;
+}
+
+
+/* ========================================
+   CARDS & CONTAINERS
+======================================== */
+
+@utility card {
+  @apply rounded-xl border border-border bg-card p-6 shadow-xs;
+}
+
+@utility code-block {
+  @apply rounded-lg border border-border bg-muted p-4 font-mono text-xs text-content overflow-x-auto;
+}
+
+
+/* ========================================
+   FOCUS & INTERACTION
+======================================== */
+
+@utility focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary/50;
+}
+
+@utility hover-scale {
+  @apply transition-transform duration-200 hover:scale-[1.02];
+}
+
+@utility hover-opacity {
+  @apply transition-opacity duration-200 hover:opacity-80;
+}

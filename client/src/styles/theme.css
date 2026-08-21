@@ -1,0 +1,64 @@
+
+/* 1. Tailwind v4 Theme Bridge */
+@theme {
+  /* Typography */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Surfaces & Layout */
+  --color-background: var(--bg-main);
+  --color-card: var(--bg-card);
+  --color-muted: var(--bg-muted);
+
+  /* Content & Borders */
+  --color-content: var(--text-main);
+  --color-content-muted: var(--text-muted);
+  --color-border: var(--border-color);
+
+  /* Action & Status Colors */
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+}
+
+/* 2. Light Theme Tokens (Default) */
+:root {
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-muted: #f1f5f9;
+
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --secondary: #64748b;
+
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+}
+
+/* 3. Dark Theme Tokens */
+.dark {
+  --bg-main: #020617;
+  --bg-card: #0f172a;
+  --bg-muted: #1e293b;
+
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+
+  --primary: #34d399;
+  --primary-hover: #10b981;
+  --secondary: #94a3b8;
+
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #f87171;
+}
