@@ -87,4 +87,19 @@ describe("SMTP capture", () => {
     const failure = replies.find((reply) => /^[45]\d\d/.test(reply));
     assert.ok(failure, `expected an error reply, got ${JSON.stringify(replies)}`);
   });
+
+  it("rejects messages over the size limit with 552 and stores nothing", async () => {
+    mock.method(console, "error", () => undefined);
+    const create = mock.method(emailRepository, "create", async () => storedEmail);
+    const oversizedBody = `${"x".repeat(998)}\n`.repeat(26 * 1024);
+
+    const replies = await sendRawMessage(port, {
+      from: "s@example.test",
+      to: ["d@example.test"],
+      message: message.replace("hello from smtp", oversizedBody),
+    });
+
+    assert.ok(replies.some((reply) => reply.startsWith("552")), JSON.stringify(replies));
+    assert.equal(create.mock.callCount(), 0);
+  });
 });
