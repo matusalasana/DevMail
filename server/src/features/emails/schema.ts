@@ -3,7 +3,6 @@ import {
   text,
   timestamp,
   uuid,
-  jsonb
 } from "drizzle-orm/pg-core";
 
 export const emails = pgTable("emails", {

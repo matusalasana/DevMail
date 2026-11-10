@@ -1,21 +1,23 @@
-import express, { Request, Response } from "express";
 import cors from "cors";
-import { errorHandler } from "./middleware/error-handler.js";
-import emailRoutes from "./modules/emails/email.routes.js"
+import express from "express";
+import { emailRoutes } from "./features/emails/index.js";
+import {
+  errorHandler,
+  notFoundHandler,
+} from "./shared/middleware/error-handler.js";
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use("/api/v1/emails", emailRoutes);
 
-app.get("/health", (_req: Request, res: Response) => {
-  res.json({
-    status: "ok",
-    service: "devmail-api",
-  });
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok", service: "devmail-api" });
 });
 
-app.use(errorHandler)
+app.use("/api/v1/emails", emailRoutes);
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 export default app;
