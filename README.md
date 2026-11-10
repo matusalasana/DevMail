@@ -1,371 +1,153 @@
-# DevMail 📧
+# DevMail
 
-DevMail is a lightweight, developer-focused email testing and routing service for capturing, inspecting, and debugging transactional emails in local and staging environments—without accidentally sending emails to real users.
+DevMail is a developer-focused email testing tool. It runs a local SMTP server that captures outgoing email, stores it in PostgreSQL, and shows it in a web dashboard and a REST API, so you can inspect what your application sends without delivering anything to real recipients.
 
-It provides a local SMTP server, web-based inbox, email inspection tools, and a REST API for automated testing.
+## The problem
 
----
+Applications send email during development (sign-up confirmations, password resets, receipts). Sending those through a real provider risks mailing real people and makes the output hard to inspect. DevMail accepts any message on a local SMTP port, keeps it, and lets you read it.
 
-## ✨ Features
+## Features
 
-- 📥 Catch-all SMTP server — Capture outgoing emails regardless of the recipient address.
-- 🔍 Email inspection — Inspect headers, raw source, HTML, and plain-text content.
-- 🖥️ Web dashboard — Browse and inspect captured emails from a local inbox.
-- 🧪 Testing-friendly REST API — Query and manage captured emails from Jest, Playwright, Cypress, or other test suites.
-- 📎 Attachment support — Inspect and download email attachments.
-- ⚡ Instant capture — Emails are available for inspection as soon as they are received.
-- 🔒 Safe local development — Keep test emails away from real users and external email providers.
-- 🌐 Offline-friendly — Run DevMail locally without relying on a third-party email delivery service.
-- 🪶 Lightweight — Designed to be simple to install, configure, and run.
+- **SMTP capture** – accepts mail for any recipient, without authentication, on a configurable port (default `1025`).
+- **Parsing** – extracts sender, recipients, subject, plain-text body and HTML body with `mailparser`. Incomplete messages are still captured with placeholders.
+- **Persistence** – captured emails are stored in PostgreSQL through Drizzle ORM and survive restarts.
+- **Dashboard** – React inbox listing emails (newest first, refreshed every 5 s) and a detail view with a sandboxed HTML preview and a plain-text view.
+- **REST API** – list, read, create, delete one and delete all emails under `/api/v1/emails`. See [docs/API.md](docs/API.md).
 
----
+Not implemented (yet): attachments, raw message source, header inspection, authentication, pagination, search. See [Limitations](#limitations).
 
-## ⚡ Quick Start
+## Technology stack
 
-Prerequisites
+| Area | Technology |
+| --- | --- |
+| Server | Node.js, TypeScript (strict), Express 5, `smtp-server`, `mailparser`, Zod |
+| Database | PostgreSQL via Drizzle ORM and the Neon serverless driver |
+| Client | React 19, TypeScript, Vite, TanStack React Query, Axios, Tailwind CSS 4 |
+| Tests | Node.js built-in test runner (run through `tsx`) |
 
-Choose either a local Node.js installation or Docker.
+## Architecture
 
-Local development:
+DevMail uses a feature-based (vertical slice) architecture. Each feature owns its routes, services, persistence and UI, and exposes a public `index.ts`; shared code is limited to cross-cutting infrastructure.
 
-- "Node.js" (https://nodejs.org/) ">= 18"
-- npm, pnpm, or yarn
-
-Docker:
-
-- Docker ">= 20"
-
-### Installation
-
-Clone the repository and install the dependencies:
 ```
-git clone https://github.com/your-username/devmail.git
-cd devmail
+server/src/
+  features/
+    emails/    REST API, validation, service, repository, schema
+    smtp/      SMTP server lifecycle and message parsing (uses emails' public API)
+  shared/      config, database client, errors, middleware
+client/src/
+  features/
+    emails/    inbox UI, hooks, API calls
+  shared/      HTTP client
+  app/         providers and root component
+docs/          architecture, features, API, development guides
 ```
-npm install
 
-Environment Configuration
+Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/FEATURES.md](docs/FEATURES.md), [docs/ARCHITECTURE_AUDIT.md](docs/ARCHITECTURE_AUDIT.md).
 
-Copy the example environment file:
+## Getting started
 
-cp .env.example .env
+### Prerequisites
 
-Update ".env" if you need to customize the default configuration.
+- Node.js 22 and npm (the version used in development and CI; older versions are untested)
+- A PostgreSQL database reachable through the Neon serverless driver (a free Neon project works). Other PostgreSQL setups have not been tested.
 
-Start DevMail
+### Install
 
-Start the development server:
-
-npm run dev
-
-Once the server is running, open the dashboard:
-
-http://localhost:3000
-
----
-
-## 🚀 Usage
-
-Configure Your Application
-
-Point your application's SMTP configuration to the DevMail SMTP server.
-
-Setting| Value
-SMTP Host| "localhost" or "127.0.0.1"
-SMTP Port| "1025"
-Username| Optional / Any
-Password| Optional / Any
-TLS| Disabled for local development
-
-For example:
-
-SMTP_HOST=localhost
-SMTP_PORT=1025
-SMTP_USER=
-SMTP_PASSWORD=
-
-«Tip: Configure DevMail only in your development, testing, or staging environment. Avoid pointing production applications at a local test SMTP server.»
-
-Send a Test Email
-
-Once your application is configured, send an email normally.
-
-For example, using Nodemailer:
-
-import nodemailer from "nodemailer";
-
-const transporter = nodemailer.createTransport({
-  host: "localhost",
-  port: 1025,
-  secure: false,
-});
-
-await transporter.sendMail({
-  from: "no-reply@example.test",
-  to: "developer@example.test",
-  subject: "DevMail test",
-  text: "This email was captured by DevMail.",
-  html: "<h1>Hello from DevMail!</h1>",
-});
-
-The email should appear immediately in the DevMail dashboard.
-
----
-
-## 🖥️ Web Dashboard
-
-Open:
-
-http://localhost:3000
-
-The dashboard provides a local inbox where you can browse captured emails and inspect their contents.
-
-Depending on the email, you can inspect:
-
-- Sender and recipient information
-- Subject
-- Email headers
-- Plain-text content
-- Rendered HTML
-- Raw email source
-- Attachments
-
----
-
-## 🧪 Automated Testing
-
-DevMail is designed to work well with automated end-to-end and integration tests.
-
-You can use the REST API to:
-
-1. Clear the test inbox.
-2. Trigger an email from your application.
-3. Query captured emails.
-4. Assert the recipient, subject, body, headers, or attachments.
-5. Clean up after the test.
-
-This makes DevMail suitable for tools such as:
-
-- Jest
-- Vitest
-- Playwright
-- Cypress
-- Supertest
-- Postman
-- Custom test runners
-
-Example
-
-# Clear the inbox
-curl -X DELETE http://localhost:3000/api/v1/emails
-
-# Retrieve captured emails
-curl http://localhost:3000/api/v1/emails
-
----
-
-## 🔌 REST API
-
-The API is available under:
-
-/api/v1
-
-Get Captured Emails
-
-GET /api/v1/emails
-
-Returns the emails currently stored by DevMail.
-
-Example:
-
-curl http://localhost:3000/api/v1/emails
-
-Get a Specific Email
-
-GET /api/v1/emails/:id
-
-Returns the complete payload for a specific captured email.
-
-Example:
-
-curl http://localhost:3000/api/v1/emails/123
-
-Clear the Inbox
-
-DELETE /api/v1/emails
-
-Deletes all currently captured emails.
-
-Example:
-
-curl -X DELETE http://localhost:3000/api/v1/emails
-
----
-
-## ⚙️ Configuration
-
-DevMail can be configured through environment variables in ".env".
-
-Environment Variables
-
-Variable| Default| Description
-"PORT"| "3000"| Port used by the web dashboard and REST API
-"SMTP_PORT"| "1025"| Port used by the local SMTP server
-"MAX_EMAILS"| "100"| Maximum number of emails retained in memory
-
-Example ".env":
-
-PORT=3000
-SMTP_PORT=1025
-MAX_EMAILS=100
-
-«Note: Captured emails are stored in memory. Restarting DevMail clears the current inbox unless persistent storage is implemented.»
-
----
-
-## 🐳 Docker
-
-DevMail can also be run with Docker if a Docker configuration is provided by the project.
-
-Build the image:
-
-docker build -t devmail .
-
-Run DevMail:
-
-docker run --rm \
-  -p 3000:3000 \
-  -p 1025:1025 \
-  devmail
-
-The dashboard will then be available at:
-
-http://localhost:3000
-
-Your application can connect to the SMTP server on:
-
-localhost:1025
-
----
-
-## 🏗️ Architecture
-
-At a high level, DevMail consists of three components:
+```bash
+git clone https://github.com/matusalasana/DevMail.git
+cd DevMail
+(cd server && npm install)
+(cd client && npm install)
 ```
-┌─────────────────────┐
-│   Your Application  │
-└──────────┬──────────┘
-           │ SMTP
-           ▼
-┌─────────────────────┐
-│   DevMail SMTP      │
-│      Server         │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│  In-Memory Inbox    │
-└──────────┬──────────┘
-           │
-      ┌────┴─────┐
-      ▼          ▼
-┌──────────┐ ┌──────────┐
-│   Web UI │ │ REST API │
-└──────────┘ └──────────┘
+
+### Configure
+
+```bash
+cp server/.env.example server/.env   # set DATABASE_URL
+cp client/.env.example client/.env   # optional; defaults to http://localhost:3000/api/v1
 ```
-This architecture keeps email delivery inside your development environment and makes captured messages accessible through both the browser and API.
 
----
+| Variable | Package | Default | Description |
+| --- | --- | --- | --- |
+| `DATABASE_URL` | server | none (required) | PostgreSQL connection string |
+| `NODE_ENV` | server | `development` | `development`, `test` or `production` |
+| `API_HOST` / `API_PORT` | server | `0.0.0.0` / `3000` | REST API bind address |
+| `SMTP_HOST` / `SMTP_PORT` | server | `0.0.0.0` / `1025` | SMTP bind address |
+| `VITE_API_URL` | client | `http://localhost:3000/api/v1` | API base URL, including `/api/v1` |
 
-## 🔐 Security Considerations
+### Database
 
-DevMail is intended primarily for local development and controlled staging environments.
+```bash
+cd server
+npm run migrate   # apply drizzle/0000_init.sql
+```
 
-By default, the SMTP server and web interface may not provide authentication or encryption suitable for production use.
+If your database was created earlier with `npm run push`, the `emails` table already exists and the initial migration will fail; keep using `npm run push` for that database.
 
-When running DevMail in a shared or remote environment:
+### Run
 
-- Do not expose the SMTP server publicly without appropriate protection.
-- Do not expose captured emails to untrusted users.
-- Avoid placing sensitive production email data into DevMail.
-- Use network controls or authentication if the service is accessible outside your local machine.
-- Keep DevMail disabled or isolated from production email infrastructure.
+```bash
+# terminal 1: API (3000) + SMTP (1025)
+cd server && npm run dev
 
----
+# terminal 2: dashboard (http://localhost:5173)
+cd client && npm run dev
+```
 
-## 🛠️ Development
+### Point your application at DevMail
 
-Install dependencies:
+| Setting | Value |
+| --- | --- |
+| SMTP host | `localhost` |
+| SMTP port | `1025` |
+| Username / password | none |
+| Secure (implicit TLS) | `false` |
 
-npm install
+Example with Nodemailer (not a dependency of this project):
 
-Start the development server:
+```js
+const transporter = nodemailer.createTransport({ host: "localhost", port: 1025, secure: false });
+await transporter.sendMail({ from: "no-reply@example.test", to: "dev@example.test", subject: "Hello", text: "Captured by DevMail" });
+```
 
-npm run dev
+The email appears in the dashboard within a few seconds, or immediately in `GET /api/v1/emails`.
 
-Run tests:
+## Development commands
 
-npm test
+| Where | Command | Purpose |
+| --- | --- | --- |
+| `server/` | `npm run dev` | Start API and SMTP with reload |
+| `server/` | `npm run typecheck` | Type-check including tests |
+| `server/` | `npm test` | Run server tests (no database needed) |
+| `server/` | `npm run build` / `npm start` | Compile to `dist/` and run it |
+| `server/` | `npm run generate` / `migrate` / `push` | Drizzle migrations |
+| `client/` | `npm run dev` | Start Vite dev server |
+| `client/` | `npm run lint` / `typecheck` / `build` | Quality checks and production build |
 
-Build the application:
+More in [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
-npm run build
+## Testing
 
-«The exact commands may vary depending on the project's configured scripts in "package.json".»
+`cd server && npm test` runs the server tests, which cover the REST API (over real HTTP with the repository mocked), request validation, message parsing and an SMTP end-to-end capture including concurrent connections and persistence failure. They do not need a database. There are currently no client tests and no tests that run against a real PostgreSQL instance.
 
----
+## Deployment
 
-## 🗺️ Roadmap
+The server builds with `npm run build` and starts with `npm start`; the client builds to static files with `npm run build` (set `VITE_API_URL` at build time). No Dockerfile or hosting configuration is included, and no public demo is provided.
 
-Potential future improvements include:
+## Limitations
 
-- [ ] Persistent email storage
-- [ ] Email search and filtering
-- [ ] Inbox pagination
-- [ ] Email export
-- [ ] Improved attachment inspection
-- [ ] SMTP authentication
-- [ ] WebSocket-based live inbox updates
-- [ ] Docker Compose support
-- [ ] Email preview on mobile devices
-- [ ] Configurable retention policies
-- [ ] Test-specific inboxes
-- [ ] Webhook support
-- [ ] Advanced email assertions for automated tests
+- Attachments are **not** stored or shown; they are discarded when a message is captured.
+- Raw source and headers are not stored or shown.
+- Messages larger than 25 MB are rejected (SMTP 552).
+- The list endpoint returns every email with full bodies; there is no pagination or search.
+- The dashboard has no delete controls yet (the API and client hooks exist).
+- The SMTP server does not require authentication.
 
----
+## Security considerations
 
-## 🤝 Contributing
+DevMail is meant for local development and trusted networks. The API has no authentication and allows any CORS origin, and the SMTP server accepts any sender. Do not expose either port to the internet, and do not route production email through it. Captured HTML is rendered in a sandboxed iframe (scripts disabled). Keep `server/.env` out of version control.
 
-Contributions, bug reports, feature requests, and improvements are welcome.
+## Future improvements
 
-A typical contribution workflow:
-
-git checkout -b feature/my-feature
-
-# Make your changes
-
-npm test
-
-git add .
-git commit -m "feat: add my feature"
-
-git push origin feature/my-feature
-
-Then open a pull request with a clear description of your changes.
-
----
-
-## 📄 License
-
-DevMail is licensed under the MIT License.
-
-See the "LICENSE" file for the complete license text.
-
----
-
-## ❤️ Why DevMail?
-
-Testing email shouldn't require sending emails to real inboxes.
-
-DevMail gives developers a fast, local, and predictable way to capture emails, inspect exactly what their application generated, and verify email workflows automatically—without relying on external email providers.
+Attachment capture, raw source and header views, delete controls in the dashboard, pagination and search, API authentication.
