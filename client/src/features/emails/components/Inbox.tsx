@@ -1,20 +1,15 @@
-import { useState } from 'react';
-import { useEmails } from './hooks/useEmails';
-import EmailRow from './components/EmailRow';
-import EmailDetail from './components/EmailDetails';
-import { type Email } from './types/emails';
+import { useState } from "react";
+import { useEmails } from "../hooks/useEmails";
+import EmailDetail from "./EmailDetail";
+import EmailRow from "./EmailRow";
 
-export default function App() {
-  const { data, isLoading: emailsLoading, error } = useEmails();
+export function Inbox() {
+  const { data: emails = [], isLoading, error } = useEmails();
   const [selectedEmailId, setSelectedEmailId] = useState<string | null>(null);
 
-  const emails: Email[] = Array.isArray(data)
-    ? data
-    : (data as { emails?: Email[] })?.emails ?? [];
+  const selectedEmail = emails.find((email) => email.id === selectedEmailId);
 
-  const selectedEmail = emails.find((e) => e.id === selectedEmailId);
-
-  if (emailsLoading) {
+  if (isLoading) {
     return (
       <div className="container-custom section flex-center">
         <p className="muted font-mono text-sm animate-pulse">Loading inbox...</p>
@@ -40,13 +35,11 @@ export default function App() {
           />
         ) : (
           <div className="border border-border rounded-xl overflow-hidden bg-card shadow-xs">
-            {/* Header */}
             <div className="flex-between px-4 py-3 bg-muted border-b border-border text-xs font-mono text-content-muted">
               <span>CAPTURED EMAILS ({emails.length})</span>
               <span>DEVMAIL LOCAL SMTP</span>
             </div>
 
-            {/* List */}
             {emails.length === 0 ? (
               <div className="text-center py-12">
                 <p className="muted font-mono text-sm">No intercepted emails found.</p>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { type Email } from '../types/emails';
+import { type Email } from '../types';
 
 interface EmailDetailProps {
   email: Email;
@@ -34,7 +34,7 @@ export default function EmailDetail({ email, onBack }: EmailDetailProps) {
 
       {/* Subject & Envelope Details */}
       <div>
-        <h2 className="heading text-xl mb-3">{email.subject}</h2>
+        <h2 className="heading text-xl mb-3">{email.subject || '(No Subject)'}</h2>
         <div className="flex-between bg-muted/50 p-3 rounded-lg border border-border text-xs font-mono">
           <div className="space-y-1">
             <p className="text-content">
@@ -70,9 +70,11 @@ export default function EmailDetail({ email, onBack }: EmailDetailProps) {
       <div>
         {activeTab === 'html' && email.htmlBody ? (
           <div className="border border-border rounded-lg p-2 bg-white min-h-[350px]">
+            {/* Captured HTML is untrusted: an empty sandbox blocks scripts and same-origin access. */}
             <iframe
               srcDoc={email.htmlBody}
               title="Email Body Preview"
+              sandbox=""
               className="w-full min-h-[350px] border-none"
             />
           </div>
