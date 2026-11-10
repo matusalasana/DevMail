@@ -4,11 +4,9 @@ dist/
 coverage/
 .DS_Store
 *.log
-.env*
+*.tsbuildinfo
+
+# Environment files (examples are committed)
 .env
+.env.*
 !.env.example
-
-/generated/prisma
-
-# DevMail attachment storage
-storage/
